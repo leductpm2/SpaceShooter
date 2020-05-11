@@ -55,13 +55,8 @@ cc.Class({
     onLoad () {
         this.schedule(this.spawEnemy, 1 ,cc.macro.REPEAT_FOREVER, 3);
     },
-
-    start () {
-        this.node.on('mousedown',this.shoot,this);
-      
-     
+    start () {     
     },
-
     update (dt) {
         this.timePassed = this.timePassed + dt;
         console.log("timePassed",  Math.floor(this.timePassed));

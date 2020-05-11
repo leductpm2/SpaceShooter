@@ -1,0 +1,37 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "bullet-pulse",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.11666666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 2,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "c3fa6c72-b032-42cd-8842-0ed3c672d673"
+            }
+          },
+          {
+            "frame": 0.05,
+            "value": {
+              "__uuid__": "ff9722b8-1e8b-448d-bb25-b89ffe7777b8"
+            }
+          },
+          {
+            "frame": 0.1,
+            "value": {
+              "__uuid__": "c3fa6c72-b032-42cd-8842-0ed3c672d673"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

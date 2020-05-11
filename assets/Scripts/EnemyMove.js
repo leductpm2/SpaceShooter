@@ -15,12 +15,35 @@ cc.Class({
             type: cc.Integer, 
             serializable: true,   // optional, default is true
         }, 
+        ExplosionEffect: {           
+            default: null, 
+            type: cc.Prefab, 
+            serializable: true,
+        },
+        ExplosionSound: {           
+            default: null, 
+            type: cc.AudioClip, 
+            serializable: true,
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
+    onCollisionEnter(other, self)
+    {  
+        if(other.tag == 2) // Player bullet tag is 2
+        {
+            this.node.destroy();
 
-    onLoad () {
-        
+            var explosiveEffect = cc.instantiate(this.ExplosionEffect);
+            explosiveEffect.setPosition(this.node.position.x, this.node.position.y);
+            parent.addChild(explosiveEffect);  
+            
+            cc.audioEngine.playEffect(this.ExplosionSound,false);
+        }
+    }, 
+
+    onLoad () {    
+        cc.director.getCollisionManager().enabled = true;         
     },
 
     start () {

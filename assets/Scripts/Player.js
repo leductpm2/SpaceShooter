@@ -19,10 +19,15 @@ cc.Class({
             type: cc.AudioClip, 
             serializable: true, 
         },
-        parent:{
+        LoseSound:{
+            default: null,
+            type: cc.AudioClip, 
+            serializable: true, 
+        },
+        parent:{ //TODO: remove
             default: null,
             visible: false,
-        }
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -39,25 +44,25 @@ cc.Class({
     {
         var newBullet = cc.instantiate(this.Bullet);
         newBullet.setPosition(this.node.position.x, this.node.position.y);
-        parent.addChild(newBullet);       
+        parent.addChild(newBullet);   
 
-        // var mousePosition = event.getLocation();
-        // mousePosition = this.node.convertToNodeSpaceAR(mousePosition);
-        // this.posX = mousePosition.x;
-        // this.posY = mousePosition.y;
-
-        // var actionBy = cc.moveTo(0.2,cc.v2(this.posX,this.posY));
-        // var destruction = cc.callFunc(function(){
-        //     newBullet.destroy();
-        // },this);
-        // var sequence = cc.sequence(actionBy,destruction);
-        // newBullet.runAction(sequence);
         cc.audioEngine.playEffect(this.ShootSound,false);
     },
-    onLoad () {        
+    onCollisionEnter(other, self)
+    {  
+        if(other.tag == 3) // Enemy tag is 3
+        {
+            this.node.destroy();
+            cc.audioEngine.playEffect(this.LoseSound,false);
+        }
+    },   
+    onLoad () {  
         parent = this.node.parent;       
         parent.on('mousemove', this.playerMovement, this);
-        parent.on('mousedown', this.playerShoot, this);        
+        parent.on('mousedown', this.playerShoot, this);  
+
+        var manager = cc.director.getCollisionManager();
+        manager.enabled = true;       
     },
     start () {
       

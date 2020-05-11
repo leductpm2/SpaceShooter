@@ -18,8 +18,16 @@ cc.Class({
     },
 
     // LIFE-CYCLE CALLBACKS:
+    onCollisionEnter(other, self)
+    {  
+        if(other.tag == 3) // Enemy tag is 2
+        {
+            this.node.destroy();
+        }
+    },
 
-    onLoad () {        
+    onLoad () {   
+        cc.director.getCollisionManager().enabled = true;         
     },
     
     start () {      

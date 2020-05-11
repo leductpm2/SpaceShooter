@@ -28,18 +28,6 @@ cc.Class({
         }, 
     },
     // LIFE-CYCLE CALLBACKS:
-    shoot(event)
-    {
-        var mousePosition = event.getLocation();
-        mousePosition = this.node.convertToNodeSpaceAR(mousePosition);
-        posX = mousePosition.x;
-        posY = mousePosition.y;
-
-        var newExplosion = cc.instantiate(this.Explosion);
-        newExplosion.setPosition(posX, posY);
-        this.node.addChild(newExplosion);
-
-    },
     spawEnemy(event)
     {
         var canvasSize = this.node.getContentSize();
@@ -54,6 +42,7 @@ cc.Class({
     },
     onLoad () {
         this.schedule(this.spawEnemy, 1 ,cc.macro.REPEAT_FOREVER, 3);
+              
     },
     start () {     
     },

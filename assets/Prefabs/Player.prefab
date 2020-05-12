@@ -59,7 +59,7 @@
       "array": [
         0,
         0,
-        0,
+        415.69219,
         0,
         0,
         0,
@@ -130,7 +130,7 @@
         "__uuid__": "8dc07de1-f4eb-4077-b6f4-b7be31e1fb5a"
       }
     ],
-    "playOnLoad": false,
+    "playOnLoad": true,
     "_id": ""
   },
   {

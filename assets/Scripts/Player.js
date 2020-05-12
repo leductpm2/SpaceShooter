@@ -52,8 +52,9 @@ cc.Class({
     {  
         if(other.tag == 3) // Enemy tag is 3
         {
-            this.node.destroy();
+            parent.getComponent("Main").gameOver(); // TODO
             cc.audioEngine.playEffect(this.LoseSound,false);
+            this.node.destroy();
         }
     },   
     onLoad () {  

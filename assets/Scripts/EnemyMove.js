@@ -32,13 +32,13 @@ cc.Class({
     {  
         if(other.tag == 2) // Player bullet tag is 2
         {
-            this.node.destroy();
-
             var explosiveEffect = cc.instantiate(this.ExplosionEffect);
             explosiveEffect.setPosition(this.node.position.x, this.node.position.y);
             parent.addChild(explosiveEffect);  
             
             cc.audioEngine.playEffect(this.ExplosionSound,false);
+            this.node.parent.getComponent("Main").updateScore(); // TODO
+            this.node.destroy();
         }
     }, 
 

@@ -21,6 +21,11 @@ cc.Class({
             type: cc.Prefab, 
             serializable: true, 
         }, 
+        ActionUI: {   
+            default: null,
+            type: cc.Node, 
+            serializable: true,
+        }, 
         timePassed: {
             default: 0,       
             type: cc.Integer, 
@@ -40,14 +45,24 @@ cc.Class({
         newEnemy.setPosition(posX, canvasSize.height / 2);
         this.node.addChild(newEnemy);
     },
+    updateScore()
+    {
+        this.Score +=1;
+        this.ActionUI.getComponent("ActionUI").updateScore(this.Score);
+    },
+    gameOver()
+    {
+        console.log("gameOver");
+        this.ActionUI.getComponent("ActionUI").showGameOver();
+    },
     onLoad () {
         this.schedule(this.spawEnemy, 1 ,cc.macro.REPEAT_FOREVER, 3);
-              
+        this.Score = 0;        
     },
     start () {     
+        //this.ActionUI.getComponent("ActionUI").hideGameOver();
     },
     update (dt) {
-        this.timePassed = this.timePassed + dt;
-        console.log("timePassed",  Math.floor(this.timePassed));
+        this.timePassed = this.timePassed + dt;   
     },
 });

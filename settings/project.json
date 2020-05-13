@@ -34,7 +34,7 @@
   "excluded-modules": [
     "3D Physics/Builtin"
   ],
-  "last-module-event-record-time": 0,
+  "last-module-event-record-time": 1589282040907,
   "design-resolution-width": 640,
   "design-resolution-height": 480,
   "fit-width": true,
@@ -57,5 +57,6 @@
       "enable": false
     }
   },
-  "migrate-history": []
+  "migrate-history": [],
+  "start-scene": "current"
 }

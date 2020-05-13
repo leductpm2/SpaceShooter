@@ -33,10 +33,10 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
     playerMovement(event)
     {
-        var mousePosition = event.getLocation();
-        mousePosition = parent.convertToNodeSpaceAR(mousePosition);
-        posX = mousePosition.x;
-        posY = mousePosition.y;     
+        var eventLocation = event.getLocation();
+        var mousePosition = parent.convertToNodeSpaceAR(eventLocation);
+        var posX = mousePosition.x;
+        var posY = mousePosition.y;     
 
         this.node.setPosition(posX, posY);
     },

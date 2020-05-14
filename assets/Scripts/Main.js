@@ -4,65 +4,101 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+import { connect } from './socket.io.js';
+var socket = null;
+let playerMap = new Map()
+const xah_obj_to_map = ( obj => {
+    const mp = new Map;
+    Object.keys ( obj ). forEach (k => { mp.set(k, obj[k]) });
+    return mp;
+});
 
-cc.Class({
+var MainAPP = cc.Class({
     extends: cc.Component,
 
     properties: {
-        Explosion: {
-            // ATTRIBUTES:
-            default: null,        // The default value will be used only when the component attaching
-                                  // to a node for the first time
-            type: cc.Prefab, // optional, default is typeof default
-            serializable: true,   // optional, default is true
-        }, 
-        Enemies: {
-            default: [],       
+        Player: {
+            default: null,       
             type: cc.Prefab, 
             serializable: true, 
-        }, 
-        ActionUI: {   
-            default: null,
-            type: cc.Node, 
-            serializable: true,
-        }, 
-        timePassed: {
-            default: 0,       
-            type: cc.Integer, 
-            visible: false,
-        }, 
+        },
+        playerID: '',
+        nodeID:'',           
     },
-    // LIFE-CYCLE CALLBACKS:
-    spawEnemy(event)
-    {
-        var canvasSize = this.node.getContentSize();
-        //Due to 0:0 in center
-        var posX = Math.floor(Math.random() * canvasSize.width) - canvasSize.width / 2;
-        var posY = Math.floor(Math.random() * canvasSize.height);
-       
-        var enemyType = Math.floor(Math.random() * this.Enemies.length);        
-        var newEnemy = cc.instantiate(this.Enemies[enemyType]); 
-        newEnemy.setPosition(posX, canvasSize.height / 2);
-        this.node.addChild(newEnemy);
+    statics:{
+        instance: null,
     },
-    updateScore()
-    {
-        this.Score +=1;
-        this.ActionUI.getComponent("ActionUI").updateScore(this.Score);
+    updatePosition(posX, posY) {
+        if (!cc.sys.isNative) {
+            console.log("updatePosition server");
+     
+            console.log("updatePosition server2");
+            socket.emit('updatePosition', {
+                "nodeID": this.nodeID,
+                "playerID": this.playerID,
+                "posX": posX,
+                "posY": posY,
+            });        
+         
+        }
     },
-    gameOver()
-    {
-        console.log("gameOver");
-        this.ActionUI.getComponent("ActionUI").showGameOver();
+    updatePlayers(value, key, map) {
+
+        console.log(`m[${key}] = ${value}`);
+        let playerData = playerMap.get(key);
+        if(!playerData)
+        {
+            var player = cc.instantiate(MainAPP.instance.Player);
+            player.setPosition(value.posX, value.posY);        
+            MainAPP.instance.node.addChild(player);    
+            console.log("Create Player:", key ,"==", MainAPP.instance.playerID,"==", key == this.playerID);        
+            if(key == MainAPP.instance.playerID)
+            {
+                MainAPP.instance.nodeID = player._id;
+                console.log("Create Self Player:", value.playerID, " with ID:", player._id);
+            }
+            else
+            {
+                console.log("Create Player:", value.playerID, " with ID:", player._id);
+            }
+            playerMap.set(key, {
+                "node": player,
+                "playerID": key,
+                "posX": value.posX,
+                "posY": value.posY
+            });
+        }
+        else
+        {
+            console.log( "update: ", playerData);
+            playerData.node.setPosition(value.posX, value.posY);
+        }       
     },
-    onLoad () {
-        this.schedule(this.spawEnemy, 1 ,cc.macro.REPEAT_FOREVER, 3);
-        this.Score = 0;        
+    onLoad () {  
+        MainAPP.instance = this;
+        if (!cc.sys.isNative) {
+            socket = connect('http://192.168.1.28:3000');            
+            socket.on('connect', () => {
+                this.playerID = socket.id;
+                console.log('Socket connected id:', this.playerID);                
+                socket.emit('CreatePlayer', 'Hello Server');
+                socket.on('CreatePlayerResponse', (data) => {                  
+                    var newMap = new Map(JSON.parse(data));                   
+                    newMap.forEach(this.updatePlayers);    
+                });
+
+                socket.on('updatePositionResponse', (data) => {     
+                    var newMap = new Map(JSON.parse(data));                        
+                    newMap.forEach(this.updatePlayers);               
+                });
+
+            }); 
+        }
     },
-    start () {     
-        //this.ActionUI.getComponent("ActionUI").hideGameOver();
+
+    start () {
+
     },
-    update (dt) {
-        this.timePassed = this.timePassed + dt;   
-    },
+
+    // update (dt) {},
 });

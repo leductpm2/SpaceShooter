@@ -67,7 +67,7 @@ var MainAPP = cc.Class({
     },
     serverHandler(){
         if (!cc.sys.isNative) {
-            socket = connect('http://192.168.1.28:3000');            
+            socket = connect('https://space-shooter-cocos.herokuapp.com');            
             socket.on('connect', () => {
                 this.playerID = socket.id;
                 console.log('Socket connected id:', this.playerID);                

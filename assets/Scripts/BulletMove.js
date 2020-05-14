@@ -15,6 +15,10 @@ cc.Class({
             type: cc.Integer, 
             serializable: true,   // optional, default is true
         }, 
+        playerID:{
+            default: "",
+            visible: false,
+        }   
     },
 
     // LIFE-CYCLE CALLBACKS:

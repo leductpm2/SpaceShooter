@@ -31,24 +31,40 @@ io.on('connection', socket => {
     }    
   }); 
 
-  socket.on('updatePosition', data => {
+  socket.on('onPlayerMove', data => {
     let playerData = playerMap.get(data.playerID);
     if(!playerData)
     {
-      console.log("updatePosition ", data.playerID, " failed")
+      console.log("onPlayerMove ", data.playerID, " failed")
     }
     else
-    {
-      console.log("updatePosition ", data);
+    {      
       playerData.posX = data.posX;
       playerData.posY = data.posY;
       let transitString = JSON.stringify(Array.from(playerMap));
-      socket.broadcast.emit('updatePositionResponse', transitString);
+      socket.broadcast.emit('onPlayerMoveResponse', transitString);
     }  
   });
 
+  socket.on('onPlayerShoot', data => {
+    let playerData = playerMap.get(data.playerID);
+    if(!playerData)
+    {
+      console.log("onPlayerShoot ", data.playerID, " failed")
+    }
+    else
+    {
+      console.log("onPlayerShoot ", data);
+      //playerData.posX = data.posX;
+      //playerData.posY = data.posY;
+      //let transitString = JSON.stringify(Array.from(playerMap));
+      socket.broadcast.emit('onPlayerShootResponse', data);
+    }  
+  });
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('User disconnected ', socketId);
+    playerMap.delete(socketId);
+    socket.broadcast.emit('playerDisconect', socketId);
   });
 });
 

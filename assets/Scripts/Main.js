@@ -7,12 +7,6 @@
 import { connect } from './socket.io.js';
 var socket = null;
 let playerMap = new Map()
-const xah_obj_to_map = ( obj => {
-    const mp = new Map;
-    Object.keys ( obj ). forEach (k => { mp.set(k, obj[k]) });
-    return mp;
-});
-
 var MainAPP = cc.Class({
     extends: cc.Component,
 
@@ -22,24 +16,30 @@ var MainAPP = cc.Class({
             type: cc.Prefab, 
             serializable: true, 
         },
-        playerID: '',
-        nodeID:'',           
+        playerID:{
+            default: "",
+            visible: false,
+        }       
     },
     statics:{
         instance: null,
     },
-    updatePosition(posX, posY) {
-        if (!cc.sys.isNative) {
-            console.log("updatePosition server");
-     
-            console.log("updatePosition server2");
-            socket.emit('updatePosition', {
-                "nodeID": this.nodeID,
+    onPlayerMove(posX, posY) {
+        if (!cc.sys.isNative) {          
+            socket.emit('onPlayerMove', {                
                 "playerID": this.playerID,
                 "posX": posX,
                 "posY": posY,
-            });        
-         
+            });
+        }
+    },
+    onPlayerShoot(posX, posY) {
+        if (!cc.sys.isNative) {          
+            socket.emit('onPlayerShoot', {                
+                "playerID": this.playerID,
+                "posX": posX,
+                "posY": posY,
+            });
         }
     },
     updatePlayers(value, key, map) {
@@ -48,19 +48,11 @@ var MainAPP = cc.Class({
         let playerData = playerMap.get(key);
         if(!playerData)
         {
-            var player = cc.instantiate(MainAPP.instance.Player);
+            var player = cc.instantiate(MainAPP.instance.Player);  
+            player.getComponent("Player").playerID = key;
+            console.log("Create Player:", key ,"==", MainAPP.instance.playerID,"==", key == this.playerID); 
             player.setPosition(value.posX, value.posY);        
-            MainAPP.instance.node.addChild(player);    
-            console.log("Create Player:", key ,"==", MainAPP.instance.playerID,"==", key == this.playerID);        
-            if(key == MainAPP.instance.playerID)
-            {
-                MainAPP.instance.nodeID = player._id;
-                console.log("Create Self Player:", value.playerID, " with ID:", player._id);
-            }
-            else
-            {
-                console.log("Create Player:", value.playerID, " with ID:", player._id);
-            }
+            MainAPP.instance.node.addChild(player);   
             playerMap.set(key, {
                 "node": player,
                 "playerID": key,
@@ -69,13 +61,11 @@ var MainAPP = cc.Class({
             });
         }
         else
-        {
-            console.log( "update: ", playerData);
+        {         
             playerData.node.setPosition(value.posX, value.posY);
         }       
     },
-    onLoad () {  
-        MainAPP.instance = this;
+    serverHandler(){
         if (!cc.sys.isNative) {
             socket = connect('http://192.168.1.28:3000');            
             socket.on('connect', () => {
@@ -87,13 +77,37 @@ var MainAPP = cc.Class({
                     newMap.forEach(this.updatePlayers);    
                 });
 
-                socket.on('updatePositionResponse', (data) => {     
+                socket.on('onPlayerMoveResponse', (data) => {     
                     var newMap = new Map(JSON.parse(data));                        
                     newMap.forEach(this.updatePlayers);               
                 });
 
+                
+                socket.on('onPlayerShootResponse', (data) => { 
+                    if(playerMap.has(data.playerID))
+                    {
+                        let playerData = playerMap.get(data.playerID);                  
+                        playerData.node.getComponent("Player").shoot(data.playerID, data.posX, data.posY);
+                    }
+                    else
+                    {
+                        console.log("onPlayerShootResponse not found player ", data.playerID);
+                    }           
+                 });
+
+                 socket.on('playerDisconect', (data) => { 
+                    if(playerMap.has(data))
+                    {
+                         console.log("playerDisconect Client");
+                         playerMap.get(data).node.destroy();
+                    }                               
+                 });
             }); 
-        }
+        } 
+    },
+    onLoad () {  
+        MainAPP.instance = this;
+        this.serverHandler();
     },
 
     start () {

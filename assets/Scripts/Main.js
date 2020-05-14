@@ -19,10 +19,35 @@ var MainAPP = cc.Class({
         playerID:{
             default: "",
             visible: false,
-        }       
+        },
+        Enemies: {
+            default: [],       
+            type: cc.Prefab, 
+            serializable: true, 
+        },        
     },
     statics:{
         instance: null,
+    },
+    spawEnemy(posX, posY, type, id)
+    {     
+        var newEnemy = cc.instantiate(this.Enemies[type]); 
+        newEnemy.getComponent("EnemyMove").enemyID = id;      
+        newEnemy.setPosition(posX, posY);      
+        this.node.addChild(newEnemy);
+    },
+    onEnemyDestroy(enemyID, bulletHit) {
+        if (!cc.sys.isNative) {    
+            let hitter = '';
+            if(bulletHit)  
+            {
+                hitter = this.playerID;
+            }
+            socket.emit('onEnemyDestroy', {
+                "enemyID": enemyID,
+                "playerID": hitter,
+            });
+        }
     },
     onPlayerMove(posX, posY) {
         if (!cc.sys.isNative) {          
@@ -43,14 +68,13 @@ var MainAPP = cc.Class({
         }
     },
     updatePlayers(value, key, map) {
-
         console.log(`m[${key}] = ${value}`);
         let playerData = playerMap.get(key);
         if(!playerData)
         {
             var player = cc.instantiate(MainAPP.instance.Player);  
             player.getComponent("Player").playerID = key;
-            console.log("Create Player:", key ,"==", MainAPP.instance.playerID,"==", key == this.playerID); 
+            console.log("Create Player:", key ,"==", MainAPP.instance.playerID,"==", key == MainAPP.instance.playerID); 
             player.setPosition(value.posX, value.posY);        
             MainAPP.instance.node.addChild(player);   
             playerMap.set(key, {
@@ -58,7 +82,7 @@ var MainAPP = cc.Class({
                 "playerID": key,
                 "posX": value.posX,
                 "posY": value.posY
-            });
+            });           
         }
         else
         {         
@@ -67,7 +91,9 @@ var MainAPP = cc.Class({
     },
     serverHandler(){
         if (!cc.sys.isNative) {
-            socket = connect('https://space-shooter-cocos.herokuapp.com');            
+            //socket = connect('https://space-shooter-cocos.herokuapp.com'); 
+            socket = connect('192.168.1.28:3000');          
+            console.log(socket);   
             socket.on('connect', () => {
                 this.playerID = socket.id;
                 console.log('Socket connected id:', this.playerID);                
@@ -93,19 +119,25 @@ var MainAPP = cc.Class({
                     {
                         console.log("onPlayerShootResponse not found player ", data.playerID);
                     }           
-                 });
+                });
 
-                 socket.on('playerDisconect', (data) => { 
-                    if(playerMap.has(data))
-                    {
-                         console.log("playerDisconect Client");
-                         playerMap.get(data).node.destroy();
-                    }                               
-                 });
+                socket.on('playerDisconect', (data) => { 
+                if(playerMap.has(data))
+                {
+                    console.log("playerDisconect Client");
+                    playerMap.get(data).node.destroy();
+                }                                             
+                });   
+
+                socket.on('ServerUpdate', (data) => { 
+                    this.spawEnemy(data.posX, data.posY, data.type, data.id);
+                    console.log("Server Update:", data.time, " | Client: ",Date.now());                      
+                });                
             }); 
         } 
     },
     onLoad () {  
+        console.log("BULLET_SPEED", BULLET_SPEED);
         MainAPP.instance = this;
         this.serverHandler();
     },

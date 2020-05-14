@@ -33,20 +33,19 @@ cc.Class({
     playerMovement(event)
     {                       
         var eventLocation = event.getLocation();
-        var mousePosition = mainGame.convertToNodeSpaceAR(eventLocation);
+        var mousePosition = this.mainGame.convertToNodeSpaceAR(eventLocation);
         var posX = mousePosition.x;
         var posY = mousePosition.y;     
 
-        mainGame.getComponent("Main").onPlayerMove(posX, posY);
+        this.mainGame.getComponent("Main").onPlayerMove(posX, posY);
         this.node.setPosition(posX, posY);
     },
     shoot(playerID, posX, posY){
         var newBullet = cc.instantiate(this.Bullet);
-        console.log("shoot", playerID, posX, posY);
         newBullet.getComponent("BulletMove").playerID = playerID;
         newBullet.setPosition(posX, posY);
-        mainGame.addChild(newBullet);   
-        console.log("shoot");
+        this.mainGame.addChild(newBullet);   
+        
         cc.audioEngine.playEffect(this.ShootSound,false);     
     },
     playerShoot(event)
@@ -54,24 +53,24 @@ cc.Class({
         let posX =this.node.position.x;
         let posY = this.node.position.y;     
         this.shoot(this.playerID, posX, posY);
-        mainGame.getComponent("Main").onPlayerShoot(posX, posY);
+        this.mainGame.getComponent("Main").onPlayerShoot(posX, posY);
     },
     onCollisionEnter(other, self)
     {  
         if(other.tag == 3) // Enemy tag is 3
         {
-            mainGame.getComponent("Main").gameOver(); // TODO
+            this.mainGame.getComponent("Main").gameOver(); // TODO
             cc.audioEngine.playEffect(this.LoseSound,false);
             this.node.destroy();
         }
     },   
     onLoad () {  
-        mainGame = this.node.parent;
-        console.log("onLoad", this.playerID, "+++", mainGame.getComponent("Main").playerID);       
-        if(this.playerID == mainGame.getComponent("Main").playerID)        
+        this.mainGame = this.node.parent;
+        console.log("onLoad", this.playerID, "+++", this.mainGame.getComponent("Main").playerID);       
+        if(this.playerID == this.mainGame.getComponent("Main").playerID)        
         {   
-            mainGame.on('mousemove', this.playerMovement, this);
-            mainGame.on('mousedown', this.playerShoot, this);  
+            this.mainGame.on('mousemove', this.playerMovement, this);
+            this.mainGame.on('mousedown', this.playerShoot, this);  
         }    
         var manager = cc.director.getCollisionManager();
         manager.enabled = true;       

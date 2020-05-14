@@ -25,24 +25,42 @@ cc.Class({
             type: cc.AudioClip, 
             serializable: true,
         },
+        enemyID:{
+            default: "",
+            visible: false,
+        },
     },
-
+    statics:{
+        mainGame: null,
+    },
     // LIFE-CYCLE CALLBACKS:
+    destroyEnemy(){
+        var explosiveEffect = cc.instantiate(this.ExplosionEffect);
+        explosiveEffect.setPosition(this.node.position.x, this.node.position.y);
+        this.mainGame.addChild(explosiveEffect);  
+        cc.audioEngine.playEffect(this.ExplosionSound,false);
+        this.node.destroy();
+    },
     onCollisionEnter(other, self)
     {  
         if(other.tag == 2) // Player bullet tag is 2
+        { 
+            this.mainGame.getComponent("Main").onEnemyDestroy(this.enemyID, true);
+            // TODO: send to server and destroy on another client
+            // this.node.parent.getComponent("Main").updateScore(); // TODO
+            this.destroyEnemy();
+            return;
+        }
+        if(other.tag == 4) // bounding box tag is 2
         {
-            var explosiveEffect = cc.instantiate(this.ExplosionEffect);
-            explosiveEffect.setPosition(this.node.position.x, this.node.position.y);
-            parent.addChild(explosiveEffect);  
-            
-            cc.audioEngine.playEffect(this.ExplosionSound,false);
-            this.node.parent.getComponent("Main").updateScore(); // TODO
-            this.node.destroy();
+            this.mainGame.getComponent("Main").onEnemyDestroy(this.enemyID, false);  
+            this.destroyEnemy();  
+            return;         
         }
     }, 
 
-    onLoad () {    
+    onLoad () {
+        this.mainGame = this.node.parent;    
         cc.director.getCollisionManager().enabled = true;         
     },
 
@@ -52,6 +70,6 @@ cc.Class({
     },
 
     update (dt) {
-        this.node.setPosition(this.node.position.x, this.node.position.y - this.EnemySpeed);        
+        this.node.setPosition(this.node.position.x, this.node.position.y - this.EnemySpeed);      
     },
 });

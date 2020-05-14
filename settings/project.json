@@ -3,7 +3,8 @@
     "default",
     "player",
     "bullet",
-    "enemy"
+    "enemy",
+    "boundingBox"
   ],
   "collision-matrix": [
     [
@@ -22,9 +23,18 @@
       false,
       false,
       false,
+      true,
       true
     ],
     [
+      false,
+      true,
+      true,
+      false,
+      true
+    ],
+    [
+      false,
       false,
       true,
       true,
@@ -57,6 +67,5 @@
       "enable": false
     }
   },
-  "migrate-history": [],
-  "start-scene": "current"
+  "migrate-history": []
 }

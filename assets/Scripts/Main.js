@@ -70,6 +70,10 @@ var MainAPP = cc.Class({
                 socket.disconnect();
             });
         }
+        else
+        {
+            this.ActionUI.getComponent("ActionUI").showGameOver("TODO");
+        }
     },
     updatePlayers(value, key, map) {
         let playerData = playerMap.get(key);

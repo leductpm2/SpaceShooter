@@ -1,10 +1,8 @@
 {
   "title": "SpaceShooter",
   "packageName": "org.cocos2d.demo",
-  "startScene": "1330b46b-a681-4aea-b04d-46873146cc2d",
-  "excludeScenes": [
-    "abae8ad4-9b67-4e41-8fcf-dc0f044a78de"
-  ],
+  "startScene": "2db56b8e-2b65-4171-946b-2b1b7ec5ff33",
+  "excludeScenes": [],
   "includeSDKBox": false,
   "orientation": {
     "landscapeLeft": true,

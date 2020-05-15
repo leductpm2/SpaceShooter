@@ -150,7 +150,10 @@
     "LoseSound": {
       "__uuid__": "b61203bf-cac1-4c4e-97cb-980d2b46b363"
     },
-    "parent": null,
+    "ExplosionEffect": {
+      "__uuid__": "4e43c454-4190-43dc-9e9f-57e1fa205b8f"
+    },
+    "playerID": "",
     "_id": ""
   },
   {

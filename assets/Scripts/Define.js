@@ -8,6 +8,9 @@ window.IS_SINGLE = false;
 window.CURRENT_PLAYER_ID = '';
 window.CURRENT_PLAYER_SCORE = 0;
 
+window.PLAYER_SPEED = 5;
+window.PLAYER_RATE_OF_FIRE = 250; // milisec
+
 window.BULLET_SPEED = 3;
 
 window.ENEMY_SPEED = 1;
@@ -15,3 +18,5 @@ window.TOTAL_ENEMY_TYPE = 3;
 
 window.SCREEN_WIDTH = 640;
 window.SCREEN_HEIGHT = 480;
+
+
